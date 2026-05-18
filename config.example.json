@@ -1,0 +1,5 @@
+{
+  "_comment": "复制此文件为 config.json 后填入真实值；config.json 已在 .gitignore 中。也可以直接跑 scripts/setup.sh 自动生成。",
+  "folder_token": "<飞书云盘目标文件夹的 token，从 drive +create-folder 或文件夹分享链接里取>",
+  "folder_path_hint": "Claude产出/视频笔记/"
+}

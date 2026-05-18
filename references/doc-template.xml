@@ -1,0 +1,104 @@
+<!--
+飞书 docx XML 模板（lark-video2note skill 专用）
+
+使用前请把所有 {占位符} 替换成真实内容。
+内容由你（Claude）阅读完整逐字稿后撰写，不要直接复用妙记的 summary。
+
+撰写要求详见 SKILL.md「撰写要求」一节。核心三条：
+  1. 叙述优先，bullet 只用于真正并列的清单/步骤，bullet 之间要有衔接句
+  2. 名词解释只挑 2-4 个生僻词，用大白话 + 实例/类比
+  3. 金句不超过 3 句
+-->
+
+<title>{视频标题}</title>
+
+<callout emoji="📍" background-color="light-blue" border-color="blue">
+<p><b>来源</b>　{平台中文} · {作者} · 时长 {x 分 x 秒}</p>
+<p><b>原视频</b>　<a href="{source_url}">{source_url}</a></p>
+<p><b>飞书妙记</b>　<a href="{minute_url}">{minute_url}</a></p>
+<p><b>归档于</b>　{YYYY-MM-DD}</p>
+</callout>
+
+<h1>✨ 执行摘要</h1>
+<callout emoji="💡" background-color="light-yellow" border-color="yellow">
+<p>{3-5 行讲清作者真正想说什么。要让读者读完这块就能跟别人复述视频在讲什么，不只是罗列章节。}</p>
+</callout>
+
+<h1>🎯 核心论点</h1>
+<p>{作者一句话立场。用陈述句，加粗最关键的几个词。}</p>
+
+<h1>🧭 完整论证链路</h1>
+
+<h2>1️⃣ {小节标题}</h2>
+<p>{开头一段叙述，把这一节的论点和上下文铺好。}</p>
+<p>{继续展开，证据/数据穿插。}</p>
+<!-- 必要时穿插 bullet，但每条 bullet 前后要有衔接句，不要孤零零一堆点 -->
+<ul>
+<li>{并列要点 1}</li>
+<li>{并列要点 2}</li>
+</ul>
+<p>{bullet 之后再写一段把它们串起来的话。}</p>
+
+<h2>2️⃣ {小节标题}</h2>
+<p>...</p>
+
+<!-- 关键论点/定义 用紫色 callout 突出 -->
+<callout emoji="📖" background-color="light-purple" border-color="purple">
+<p>{放最关键的定义、核心问题或转折点。}</p>
+</callout>
+
+<h2>3️⃣ ...</h2>
+<!-- 4-6 个小节，按视频推进逻辑 -->
+
+<h1>🎬 Demo 实操：{副标题}</h1>
+<p>{铺垫，讲清楚 demo 用了什么数据/场景。}</p>
+
+<callout emoji="🛠️" background-color="light-green" border-color="green">
+<p><b>数据/前置</b>　{关键数据点}</p>
+</callout>
+
+<p><b>{第一步标题}。</b>{完整段落讲清楚这一步干了什么、为什么、效果如何。}</p>
+<p><b>{第二步标题}。</b>{同上。}</p>
+<!-- 通常 3-5 步 -->
+
+<h1>📚 名词解释</h1>
+
+<p><b>{术语 1（中英文对照）}</b>　{用大白话解释，最好带一个类比或实例。例：传统数据库像字典只能查，X 像说明书能让人照着改。}</p>
+
+<p><b>{术语 2}</b>　{同上。}</p>
+
+<!-- 最多 4 个。CLI / PR / star / SKU / ROI / RFM / 帕雷托 这种业内常识不要解释 -->
+
+<h1>💬 金句原文</h1>
+<callout emoji="🗣️" background-color="light-gray" border-color="gray">
+<ul>
+<li>"{金句 1}"</li>
+<li>"{金句 2}"</li>
+<li>"{金句 3}"</li>
+</ul>
+</callout>
+<!-- 上限 3 句。选「能代表作者核心立场 / 最有传播性 / 最锐利」的。 -->
+
+<h1>📜 逐字稿（按章节整理）</h1>
+<callout emoji="📖" background-color="medium-gray" border-color="gray">
+<p>共 {x 分 x 秒}。下方按内容主题切成 {N} 段，标题带时间戳，可在大纲面板快速跳转。</p>
+<p><b>关键词</b>：{从逐字稿首部的关键词行复制}</p>
+</callout>
+
+<h2>{emoji} {HH:MM} {章节主题}</h2>
+<blockquote>
+<p>{该时间段的原文，可分多个 p}</p>
+<p>{...}</p>
+</blockquote>
+
+<h2>{emoji} {HH:MM} {章节主题}</h2>
+<blockquote>
+<p>{...}</p>
+</blockquote>
+
+<!--
+逐字稿章节切分原则：
+- 按主题切，不要按 ASR 自然停顿切；通常 5-7 段
+- 标题用 emoji + 时间戳 + 主题词，让大纲面板一眼能扫
+- 每段保持作者原意和口气，不要重写，只做轻度润色（错别字、口误标注）
+-->
