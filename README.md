@@ -10,14 +10,9 @@
 
 ## 它能干什么
 
-把这种链接：
+把任意一条视频链接（含分享口令文本），自动转成飞书里**逐字稿 + 妙记 + 结构化文档**三件套，归档到云盘指定文件夹。
 
-```
-https://www.bilibili.com/video/BV1Nd596vEyU/
-2.33 复制打开抖音，看看【小天fotos的作品】47天，飞书CLI破万星... https://v.douyin.com/ifH8HjTnQhI/
-```
-
-直接转成这种结构化飞书文档：
+结构化文档包含：
 
 - 📍 来源信息（蓝色高亮块）
 - ✨ 执行摘要（黄色高亮块，3-5 行讲清作者想说啥）
@@ -28,7 +23,21 @@ https://www.bilibili.com/video/BV1Nd596vEyU/
 - 💬 金句原文（≤ 3 句）
 - 📜 逐字稿（按章节切分，带时间戳跳转）
 
-文档落到你飞书云盘指定文件夹，**逐字稿 + 飞书妙记 + 结构化文档**三件套齐全。
+### 示例
+
+**Input**（小红书短视频，3 分 47 秒）：
+
+```
+http://xhslink.com/o/4iU6H2cknfb 教程：用AI做出超级好用的求职个人主页🌟
+```
+
+**Output**（飞书文档）：
+
+> 📄 [教程：用AI做出超级好用的求职个人主页 — 完整笔记](https://my.feishu.cn/docx/ToVIdKOjCoDoTgxecSqcG0TbnYf)
+
+> 📋 配套飞书妙记（含逐字稿原文）：[obcnphje7blvr3y2r241f84v](https://dqx06aokcvb.feishu.cn/minutes/obcnphje7blvr3y2r241f84v)
+
+文档结构截图见 [`examples/`](./examples/) 目录。
 
 ---
 
