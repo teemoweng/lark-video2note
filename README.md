@@ -37,7 +37,14 @@ http://xhslink.com/o/4iU6H2cknfb 教程：用AI做出超级好用的求职个人
 
 > 📋 配套飞书妙记（含逐字稿原文）：[obcnphje7blvr3y2r241f84v](https://dqx06aokcvb.feishu.cn/minutes/obcnphje7blvr3y2r241f84v)
 
-文档结构截图见 [`examples/`](./examples/) 目录。
+文档实际渲染效果（4 张截图）：
+
+| 块 | 截图 |
+|---|---|
+| 标题 + 来源信息 + 执行摘要 | ![](./examples/01-summary.png) |
+| 完整教程步骤（叙述段落 + 适度 bullet） | ![](./examples/02-tutorial.png) |
+| 名词解释 + 金句原文 | ![](./examples/03-glossary-quotes.png) |
+| 逐字稿（按章节切分，带 emoji + 时间戳） | ![](./examples/04-transcript.png) |
 
 ---
 

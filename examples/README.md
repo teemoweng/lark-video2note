@@ -7,9 +7,7 @@
 - 飞书妙记（含原始逐字稿）：https://dqx06aokcvb.feishu.cn/minutes/obcnphje7blvr3y2r241f84v
 
 截图：
-- `01-summary.png` — 来源信息 + 执行摘要 + 一句话讲清
-- `02-tutorial.png` — 完整教程步骤（叙述段落示例）
-- `03-glossary-quotes.png` — 名词解释 + 金句
-- `04-transcript.png` — 按章节切分的逐字稿
-
-> 截图待补，需要文档作者把飞书文档设为「互联网获得链接的人可查看」后截图上传。
+- `01-summary.png` — 标题 + 来源信息 callout + ASR 口误修正说明 + 执行摘要开头
+- `02-tutorial.png` — 完整教程步骤 5 节，展示「叙述段落 + 必要 bullet」的混合形态
+- `03-glossary-quotes.png` — 名词解释（Vibe coding / SOTA / GitHub Pages）+ 金句原文
+- `04-transcript.png` — 逐字稿头 + 5 个章节按主题切分（带 emoji + 时间戳）
