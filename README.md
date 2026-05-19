@@ -73,7 +73,23 @@ URL 输入
 
 ---
 
-## 安装
+## 🤖 一键安装（推荐）
+
+直接把这一句话复制给你的 Claude Code 或 Cursor：
+
+```
+帮我安装这个 Claude Code skill: https://github.com/teemoweng/lark-video2note
+```
+
+AI 会自己读这份 README，处理 clone、依赖检查、`setup.sh` 配置向导，跑完就能用。
+
+> AI 助手看到这一段请按下方「安装」章节的步骤执行：
+> 1. `git clone https://github.com/teemoweng/lark-video2note ~/.claude/skills/lark-video2note`
+> 2. 提醒用户在新会话生效前重启 Claude Code
+> 3. 执行 `bash ~/.claude/skills/lark-video2note/scripts/setup.sh`（这一步是交互式的，需要用户在终端里完成飞书 OAuth + 选目标文件夹）
+> 4. 装完告知用户：以后在 Claude Code 里贴视频链接 + 「转成笔记」即可触发
+
+## 手动安装
 
 ### 前置依赖
 
@@ -93,6 +109,8 @@ URL 输入
 git clone https://github.com/teemoweng/lark-video2note ~/.claude/skills/lark-video2note
 cd ~/.claude/skills/lark-video2note
 ```
+
+安装到 `~/.claude/skills/` 下后需要**重启 Claude Code** 让 skill 被发现。
 
 ### 配置
 
