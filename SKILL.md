@@ -186,6 +186,18 @@ lark-cli docs +create \
 使用飞书 docx XML 格式（不要用 markdown，markdown 不支持 callout）。
 模板和示例见 [`references/doc-template.xml`](references/doc-template.xml)。
 
+⚠️ **XML schema 是硬约束，不允许"发挥"**。常见踩坑：
+
+| 错的写法 | 正确写法 |
+|---------|---------|
+| `<docx>` / `<?xml...?>` 当根标签 | 直接 `<title>...</title>` 开头，无外层根 |
+| `<text>正文</text>` | `<p>正文</p>` ——飞书 docx **没有 `<text>` 标签**，写出来会被原样转义成可见字符串 |
+| `background_color="light-blue"`（下划线）| `background-color="light-blue"`（连字符）|
+| `emoji_id="round_pushpin"` | `emoji="📍"`（直接放 emoji 字符，不是名称 id）|
+| 把所有内容塞进一个 `<callout>` 包起来 | 用 `<h1>` / `<p>` / `<ul>` / `<callout>` 按结构拼，11 大块各就各位 |
+
+属性名一律 **kebab-case**；段落标签只能用 `<p>`；emoji 必须是字符不是名称。不在 `references/doc-template.xml` 出现的标签或属性都视为非法。生成完 `note.xml` 后 `scripts/validate-docx-xml.sh` 会做一次硬性校验，发现违规直接 fail，必须先改对再上传。
+
 ```
 1. <title>{视频标题}</title>
 2. 📍 来源信息 callout（light-blue）— 平台/作者/时长/原视频/妙记/归档日期
