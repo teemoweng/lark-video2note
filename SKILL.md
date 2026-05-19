@@ -126,14 +126,20 @@ if [ -z "$TRANSCRIPT_FILE" ]; then
   lark-cli minutes +upload --file-token "$FILE_TOKEN"
   # → 返回 data.minute_url；从 URL 末段取 minute_token
 
-  # 2b-iii: 等妙记跑完，拉逐字稿 + AI 总结
-  # 等待时间随视频时长自适应：
-  #   ≤ 10 分钟视频：首次 sleep 90s，最多 5 次重试 × 30s
-  #   10-30 分钟视频：首次 sleep 240s，最多 10 次重试 × 60s
-  #   > 30 分钟视频：首次 sleep 480s，最多 20 次重试 × 60s（最长 ~28 分钟）
-  # 长视频期间可以用 lark-cli minutes minutes get --minute-token <token> 看进度
-  lark-cli vc +notes --minute-tokens "$MINUTE_TOKEN"
-  # → data.notes[0].artifacts.transcript_file 是本地逐字稿路径
+  # 2b-iii: 等妙记 ASR 转写完成，拉逐字稿
+  # 用 wait-for-minute.sh 轮询，不要再写固定 sleep。
+  # 短视频 ~30-60s 退出；长视频自适应；最长 10 分钟兜底。
+  #
+  # 就绪信号：transcript.txt 里出现「说话人」标签（ASR 真实产出的结构标记）。
+  # 不等 artifacts.summary——飞书 AI 总结是独立流水线，比 ASR 慢 3-10 分钟，
+  # 而本 skill 用不到它（自己基于逐字稿写更密的版本，见 Step 3）。
+  #
+  # ⚠️ vc +notes 会把 transcript 下载到调用时的 CWD 下（minutes/<token>/transcript.txt），
+  #    不是绝对路径。脚本内部已 cd 到 $WORK 之类的环境时仍要确保 CWD 正确。
+  cd "$WORK"
+  bash ~/.claude/skills/lark-video2note/scripts/wait-for-minute.sh "$MINUTE_TOKEN" > _notes.json
+  # → _notes.json 是 vc +notes 的完整响应
+  # → data.notes[0].artifacts.transcript_file 是相对 CWD 的逐字稿路径
   # → AI summary 字段忽略（我们自己写更密的）
   TRANSCRIPT_FILE="$WORK/minutes/$MINUTE_TOKEN/transcript.txt"
 fi
@@ -247,7 +253,7 @@ bullet 之间一定要有衔接句，避免读者跳着扫一遍只看到散点�
 2. **抖音不要走 yt-dlp**：当前 yt-dlp 抖音 extractor 要 fresh cookies，share API 更稳
 3. **小红书需要登录态**：用户 Chrome 没登录小红书时直接报错，不要静默卡住
 4. **字幕优先**：B站 / YouTube 先试 `get-captions.sh`，拿到字幕直接跳过妙记，省 8-15 分钟
-5. **妙记是异步的**：minutes +upload 返回的瞬间内容是空的，按 Step 2b-iii 节奏轮询
+5. **妙记是异步的**：minutes +upload 返回的瞬间 transcript 是空的，用 `scripts/wait-for-minute.sh` 轮询（见 Step 2b-iii）
 6. **不要动「第二大脑」Base**：归档目标只有云盘 `视频笔记` 文件夹，保持精简
 7. **不删除本地 mp4 直到 docx 创建成功**，方便失败时不丢源
 
