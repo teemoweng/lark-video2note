@@ -156,6 +156,13 @@ fi
 # 3a. 短视频（XML < 40KB，对应大约 ≤ 20 分钟内容）— 一次性创建
 cd "$WORK"
 # ... 写入 note.xml（见下方模板）...
+
+# ⚠️ 上传前必须先过 schema 校验。validator 抓常见 XML 错误（<text> 标签、
+#    snake_case 属性、<docx> 根标签等），失败时**立即停下，改正 note.xml 后重试**。
+#    不要带着违规 XML 硬上传——服务器会静默吞掉/转义未知标签，文档表面"创建成功"
+#    但渲染稀烂，bug 拖到用户打开飞书才发现。
+bash ~/.claude/skills/lark-video2note/scripts/validate-docx-xml.sh ./note.xml || exit 1
+
 lark-cli docs +create \
   --api-version v2 \
   --parent-token $FOLDER_TOKEN \
@@ -170,7 +177,9 @@ lark-cli docs +create \
 #   ① 创建骨架：标题 + 元信息 callout + 执行摘要 + 核心论点 + 占位 heading
 #   ② 用 docs +update --command append 追加：完整论证链路 + Demo + 名词解释 + 金句
 #   ③ 再 append：逐字稿章节
+# 每一段 .xml 都要先过 validate-docx-xml.sh 再 append。
 # 例：
+#   bash ~/.claude/skills/lark-video2note/scripts/validate-docx-xml.sh ./part2.xml || exit 1
 #   lark-cli docs +update --api-version v2 --doc <url_or_token> \
 #       --mode append --content @./part2.xml
 # 写入前用 wc -c note.xml 看大小，> 40KB 走 3b
