@@ -27,12 +27,27 @@ YTDLP=$(command -v yt-dlp || echo /tmp/yt-dlp-nightly)
 COOKIES_ARG=(--cookies-from-browser chrome)
 
 # 抓字幕（含 AI 自动生成的）
-"$YTDLP" "${COOKIES_ARG[@]}" --skip-download \
-  --write-subs --write-auto-subs \
-  --sub-langs "zh-Hans,zh-CN,zh,en,en-US" \
-  --convert-subs vtt \
-  -o "$OUT_DIR/%(id)s.%(ext)s" \
-  "$URL" 2>&1 | tail -5 >&2
+# YouTube 偶发 429 限流，做最多 3 次重试，间隔 5s / 15s
+ATTEMPTS=3
+LOG="$OUT_DIR/.ytdlp-captions.log"
+for i in $(seq 1 $ATTEMPTS); do
+  "$YTDLP" "${COOKIES_ARG[@]}" --skip-download \
+    --write-subs --write-auto-subs \
+    --sub-langs "zh-Hans,zh-CN,zh,en,en-US" \
+    --convert-subs vtt \
+    -o "$OUT_DIR/%(id)s.%(ext)s" \
+    "$URL" > "$LOG" 2>&1 && break
+  if grep -q "HTTP Error 429" "$LOG" && [ "$i" -lt "$ATTEMPTS" ]; then
+    SLEEP=$((i * 10 - 5))  # 5s, 15s
+    echo "yt-dlp got 429, retry $i/$ATTEMPTS after ${SLEEP}s" >&2
+    sleep "$SLEEP"
+    continue
+  fi
+  # 非 429 失败或重试用尽 —— 把日志原样吐出去并退出
+  tail -5 "$LOG" >&2
+  exit 1
+done
+tail -5 "$LOG" >&2
 
 # 找到 vtt 文件（优先中文）
 VTT=$(ls "$OUT_DIR"/*.zh-Hans.vtt "$OUT_DIR"/*.zh-CN.vtt "$OUT_DIR"/*.zh.vtt "$OUT_DIR"/*.en.vtt "$OUT_DIR"/*.vtt 2>/dev/null | head -1)
