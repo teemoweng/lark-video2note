@@ -64,7 +64,7 @@ FOLDER_TOKEN=$(python3 -c "import json;print(json.load(open('$SKILL_ROOT/config.
 ## 流程
 
 ```bash
-# Step 0: 加载配置 + 准备工作目录
+# Step 0: 加载配置 + 准备工作目录（静默初始化，正常时不向 stdout 输出）
 SKILL_ROOT=~/.claude/skills/lark-video2note
 [ -f "$SKILL_ROOT/config.json" ] || {
   echo "❌ 缺少 config.json，请先运行：bash $SKILL_ROOT/scripts/setup.sh" >&2; exit 1;
@@ -73,6 +73,13 @@ FOLDER_TOKEN=$(python3 -c "import json;print(json.load(open('$SKILL_ROOT/config.
 TS=$(date +%s)
 WORK="/tmp/video2note/$TS"
 mkdir -p "$WORK"
+
+# 把状态写到约定路径，后续 Step 用 `WORK=$(cat /tmp/video2note_current_work)` /
+# `FOLDER_TOKEN=$(cat /tmp/video2note_current_folder)` 读回。每个 Bash 工具调用
+# 是独立 shell 进程，环境变量不持续——只能通过文件或 inline 重新赋值传递。
+# ⚠️ 不要 `echo "WORK=$WORK"` 当回显——空载 init 应该完全安静，输出留给真有事时。
+echo "$WORK" > /tmp/video2note_current_work
+echo "$FOLDER_TOKEN" > /tmp/video2note_current_folder
 
 # Step 1: 下载视频（自动识别平台）
 # 关键：捕获 exit code
@@ -91,7 +98,13 @@ if [ $DL_EXIT -eq 2 ]; then
 fi
 
 # 其它非零 exit 是真失败（网络/cookies/格式），按"失败回退"小节处理
-[ $DL_EXIT -ne 0 ] && { cat "$WORK/.dl-err" >&2; exit $DL_EXIT; }
+# ⚠️ 不要写 `[ $DL_EXIT -ne 0 ] && { ... }` 形式——当 DL_EXIT=0 时 test 退 1，
+#    会变成整个 Bash 工具调用的退出码，触发假阳性 "Error: Exit code 1"。
+#    用 if 块包起来，避免把判断结果当退出码。
+if [ $DL_EXIT -ne 0 ]; then
+  cat "$WORK/.dl-err" >&2
+  exit $DL_EXIT
+fi
 
 # 解析 META：file / title / platform / author / duration_s / source_url
 
@@ -277,6 +290,8 @@ bullet 之间一定要有衔接句，避免读者跳着扫一遍只看到散点�
 5. **妙记是异步的**：minutes +upload 返回的瞬间 transcript 是空的，用 `scripts/wait-for-minute.sh` 轮询（见 Step 2b-iii）
 6. **不要动「第二大脑」Base**：归档目标只有云盘 `视频笔记` 文件夹，保持精简
 7. **不删除本地 mp4 直到 docx 创建成功**，方便失败时不丢源
+8. **Bash 工具调用末尾不要写 `[ test ] && cmd` 链**——bash 工具调用的退出码 = 最后一条命令的退出码。当 test 不满足时（空文件 / 等于 0 等正常情况），`[ ]` 自己退 1，整个 Bash 调用就变成 "Error: Exit code 1" 假阳性，掩盖真实成功。一律用 `if [ ... ]; then ...; fi` 包起来——if 块不会把判断结果当作整体退出码外泄。
+9. **Step 0 静默初始化**：跑完 init 不要 `echo "WORK=$WORK"` / `echo "FOLDER_TOKEN=$FOLDER_TOKEN"` 当回显——状态已写到 `/tmp/video2note_current_*`，后续 step `cat` 回读即可。空载 init 应该完全无输出，让每次跑 skill 的视觉噪声降到最低。
 
 ## 失败回退
 
