@@ -49,9 +49,16 @@ for i in $(seq 1 $ATTEMPTS); do
 done
 tail -5 "$LOG" >&2
 
-# 找到 vtt 文件（优先中文）
-VTT=$(ls "$OUT_DIR"/*.zh-Hans.vtt "$OUT_DIR"/*.zh-CN.vtt "$OUT_DIR"/*.zh.vtt "$OUT_DIR"/*.en.vtt "$OUT_DIR"/*.vtt 2>/dev/null | head -1)
-[ -z "$VTT" ] && { echo "no captions file produced by yt-dlp" >&2; exit 1; }
+# 找到 vtt 文件（优先中文）。
+# ⚠️ `ls glob1 glob2 ...` 当任意 glob 不匹配时 ls 返回非零；配合 `set -euo pipefail`
+#    会让 `VTT=$(... | head -1)` 这个赋值悄无声息地终止整个脚本——vtt 文件其实在磁盘上
+#    但流程已死。结尾追加 `|| true` 让 pipeline 永远成功，依赖后面的 `[ -z "$VTT" ]`
+#    判定真没拿到字幕。
+VTT=$(ls "$OUT_DIR"/*.zh-Hans.vtt "$OUT_DIR"/*.zh-CN.vtt "$OUT_DIR"/*.zh.vtt "$OUT_DIR"/*.en.vtt "$OUT_DIR"/*.vtt 2>/dev/null | head -1 || true)
+if [ -z "$VTT" ]; then
+  echo "no captions file produced by yt-dlp" >&2
+  exit 1
+fi
 
 LANG=$(basename "$VTT" | grep -oE '\.[a-zA-Z-]+\.vtt$' | sed 's/\.vtt$//;s/^\.//')
 TRANSCRIPT="$OUT_DIR/transcript.txt"
@@ -88,7 +95,8 @@ for blk in blocks:
             last_text = text
 with open(dst, "w", encoding='utf-8') as f:
     f.write("\n".join(out_lines))
-print(len(out_lines))
+# stdout 留给最终的 JSON 输出，调试信息走 stderr，避免污染 caller 的 JSON 解析
+sys.stderr.write(f"[get-captions] parsed {len(out_lines)} lines from vtt\n")
 PY
 
 LINES=$(wc -l < "$TRANSCRIPT")
